@@ -1,0 +1,8 @@
+Projects.code-workspace
+
+# Python
+__pycache__/
+*.pyc
+
+# Runtime uploads
+backend/uploads/
