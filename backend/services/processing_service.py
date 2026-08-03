@@ -1,17 +1,14 @@
 """
-Image processing functions
+Image processing functions.
 """
 import cv2
 import numpy as np
 
 
-
 def convert_to_grayscale(image: np.ndarray):
     """
     Convert an image to grayscale.
-
     """
-
     gray_image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
 
     return gray_image
@@ -21,8 +18,7 @@ def invert_image(image: np.ndarray):
     """
     Invert image colors.
     """
-    inverted_image = cv2.bitwise_not(image)
-    
+    inverted_image = cv2.bitwise_not(image)        
     return inverted_image
 
 
@@ -33,7 +29,6 @@ def apply_binary_threshold(
     """
     Apply a binary threshold to an image.
     """
-
     gray_image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
 
     _, threshold_image = cv2.threshold(
@@ -44,3 +39,19 @@ def apply_binary_threshold(
     )
 
     return threshold_image
+
+
+def apply_gaussian_blur(
+    image: np.ndarray,
+    kernel_size: int = 31,
+) -> np.ndarray:
+    """
+    Apply Gaussian blur to an image.
+    """
+    blurred_image = cv2.GaussianBlur(
+        image,
+        (kernel_size, kernel_size),
+        0,
+    )
+
+    return blurred_image

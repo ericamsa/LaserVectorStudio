@@ -16,9 +16,11 @@ from services.upload_service import save_uploaded_file
 from services.image_service import get_image_info
 from services.processing_service import (
     apply_binary_threshold,
+    apply_gaussian_blur,
     convert_to_grayscale,
     invert_image, 
-)       
+) 
+
 
 
 app = FastAPI(title="Laser Vector Studio API")
@@ -110,4 +112,22 @@ async def threshold_image(file: UploadFile = File(...)):
         content=buffer.tobytes(),
         media_type="image/jpeg",
     )
-    
+
+@app.post("/gaussian-blur")
+async def gaussian_blur(file: UploadFile = File(...)): 
+    contents = await file.read()
+    image_array = np.frombuffer(contents, np.uint8)
+    image = cv2.imdecode(image_array, cv2.IMREAD_COLOR)
+
+    blurred_image = apply_gaussian_blur(image)
+
+    _, encoded_image = cv2.imencode(
+        ".jpg",
+        blurred_image,
+    )
+
+
+    return Response(
+        content=encoded_image.tobytes(),
+        media_type="image/jpeg",
+    )   

@@ -4,8 +4,7 @@ function ResultImagePanel({
 }) {
   return (
     <>
-      <h3>Grayscale Result</h3>
-
+      <h3>Processed Image</h3>
       <p
         style={{
           color: "#666",
@@ -19,7 +18,7 @@ function ResultImagePanel({
       {grayscalePreviewUrl && (
         <img
           src={grayscalePreviewUrl}
-          alt="Grayscale Result"
+          alt="Processed Image"
           onClick={() => onSelectImage(grayscalePreviewUrl)}
           style={{
             width: "100%",

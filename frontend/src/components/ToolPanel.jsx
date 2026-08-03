@@ -3,6 +3,7 @@ function ToolPanel({
   onReset,
   onInvert,
   onThreshold,
+  onGaussianBlur,
 }) {
   return (
     <div>
@@ -58,6 +59,17 @@ function ToolPanel({
         }}
       >
          ⚫ Threshold
+      </button>
+
+      <button
+        onClick={onGaussianBlur}
+        style={{
+          padding: "10px 20px",
+          marginTop: "10px",
+          cursor: "pointer",
+        }}
+      >
+        🌫 Gaussian Blur
       </button>
 
        </div>

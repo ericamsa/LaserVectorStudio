@@ -89,53 +89,33 @@ function handleReset() {
   setFileName("");
 }
 
-async function handleInvert() {
+async function applyFilter(endpoint) {
   const formData = new FormData();
   formData.append("file", selectedFile);
 
-  const response = await fetch("http://127.0.0.1:8000/invert", {
+  const response = await fetch(endpoint, {
     method: "POST",
     body: formData,
   });
 
-  
   const blob = await response.blob();
   const imageUrl = URL.createObjectURL(blob);
-  
-  setPreviewUrl(imageUrl);
-  console.log(imageUrl);
+
+  setGrayscalePreviewUrl(imageUrl);
 }
 
 
 async function handleInvert() {
-  const formData = new FormData();
-  formData.append("file", selectedFile);
-
-  const response = await fetch("http://127.0.0.1:8000/invert", {
-    method: "POST",
-    body: formData,
-  });
-
-const blob = await response.blob();
-const imageUrl = URL.createObjectURL(blob);
-setPreviewUrl(imageUrl);
-
+  await applyFilter("http://127.0.0.1:8000/invert");
 }
 
 async function handleThreshold() {
-  const formData = new FormData();
-  formData.append("file", selectedFile);
-
-  const response = await fetch("http://127.0.0.1:8000/threshold", {
-    method: "POST",
-    body: formData,
-  });
-
-  const blob = await response.blob();
-  const imageUrl = URL.createObjectURL(blob);
-  setPreviewUrl(imageUrl);
+  await applyFilter("http://127.0.0.1:8000/threshold");
 }
 
+async function handleGaussianBlur() {
+    await applyFilter("http://127.0.0.1:8000/gaussian-blur");
+}
 
 
   return (
@@ -164,6 +144,7 @@ async function handleThreshold() {
         onReset={handleReset}
         onInvert={handleInvert}
         onThreshold={handleThreshold}
+        onGaussianBlur={handleGaussianBlur}
       />
 
       <Workspace
