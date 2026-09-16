@@ -43,7 +43,7 @@ def apply_binary_threshold(
 
 def apply_gaussian_blur(
     image: np.ndarray,
-    kernel_size: int = 31,
+    kernel_size: int = 5,
 ) -> np.ndarray:
     """
     Apply Gaussian blur to an image.

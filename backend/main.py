@@ -8,7 +8,7 @@ import cv2
 import numpy as np
 
 
-from fastapi import FastAPI, UploadFile, File, Response
+from fastapi import FastAPI, UploadFile, File, Form, Response
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 
@@ -99,12 +99,20 @@ async def grayscale(file: UploadFile = File(...)):
     )
 
 @app.post("/threshold")
-async def threshold_image(file: UploadFile = File(...)):
+async def threshold_image(
+    file: UploadFile = File(...),
+    threshold: int = Form(127),
+):
+
     contents = await file.read()
     image_array = np.frombuffer(contents, np.uint8)
     image = cv2.imdecode(image_array, cv2.IMREAD_COLOR)
 
-    threshold_image = apply_binary_threshold(image)
+    threshold_image = apply_binary_threshold(
+        image,
+        threshold
+    )
+    
     success, buffer = cv2.imencode(".jpg", threshold_image)
 
     
@@ -114,13 +122,20 @@ async def threshold_image(file: UploadFile = File(...)):
     )
 
 @app.post("/gaussian-blur")
-async def gaussian_blur(file: UploadFile = File(...)): 
+async def gaussian_blur(
+    file: UploadFile = File(...),
+    blur: int = Form(5),
+):
+
+   
     contents = await file.read()
     image_array = np.frombuffer(contents, np.uint8)
     image = cv2.imdecode(image_array, cv2.IMREAD_COLOR)
 
-    blurred_image = apply_gaussian_blur(image)
-
+    blurred_image = apply_gaussian_blur(
+    image,
+    blur,
+)
     _, encoded_image = cv2.imencode(
         ".jpg",
         blurred_image,

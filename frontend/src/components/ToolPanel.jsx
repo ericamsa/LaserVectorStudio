@@ -4,7 +4,12 @@ function ToolPanel({
   onInvert,
   onThreshold,
   onGaussianBlur,
+  thresholdValue,
+  onThresholdValueChange,
+  blurValue,
+  onBlurValueChange,
 }) {
+
   return (
     <div>
       <h2>🛠 Image Processing Tools</h2>
@@ -61,19 +66,55 @@ function ToolPanel({
          ⚫ Threshold
       </button>
 
-      <button
-        onClick={onGaussianBlur}
-        style={{
-          padding: "10px 20px",
-          marginTop: "10px",
-          cursor: "pointer",
-        }}
-      >
-        🌫 Gaussian Blur
-      </button>
+    <div style={{ marginTop: "10px" }}>
+      <label>
+        Threshold: {thresholdValue}
+     </label>
 
-       </div>
-    </div>
+   <input
+     type="range"
+     min="0"
+     max="255"
+     value={thresholdValue}
+     onChange={(e) =>
+       onThresholdValueChange(Number(e.target.value))
+     }
+     style={{ width: "100%" }}
+   />
+  </div>
+
+      <button
+  onClick={onGaussianBlur}
+  style={{
+    padding: "10px 20px",
+    marginTop: "10px",
+    cursor: "pointer",
+  }}
+>
+  🌫 Gaussian Blur
+</button>
+
+<div style={{ marginTop: "10px" }}>
+  <label>
+    Gaussian Blur: {blurValue}
+  </label>
+
+  <input
+    type="range"
+    min="1"
+    max="31"
+    step="2"
+    value={blurValue}
+    onChange={(e) =>
+      onBlurValueChange(Number(e.target.value))
+    }
+    style={{ width: "100%" }}
+  />
+</div>
+
+</div>
+
+</div>
     
   );
 }

@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Workspace from "./components/Workspace";
 import ToolPanel from "./components/ToolPanel";
 
@@ -10,6 +10,11 @@ function App() {
   const [grayscalePreviewUrl, setGrayscalePreviewUrl] = useState("");
   const [status, setStatus] = useState("Connecting to API...");
   const [fileName, setFileName] = useState("");
+  const [thresholdValue, setThresholdValue] = useState(127);
+  const [blurValue, setBlurValue] = useState(5);
+  const fileInputRef = useRef(null);
+  
+
 
   useEffect(() => {
     fetch("http://127.0.0.1:8000")
@@ -17,6 +22,41 @@ function App() {
       .then((data) => setStatus(data.message))
       .catch(() => setStatus("Backend not connected"));
   }, []);
+
+  useEffect(() => {
+  if (!selectedFile) {
+    return;
+  }
+
+ 
+  const timer = setTimeout(() => {
+    applyFilter(
+      "http://127.0.0.1:8000/threshold",
+      {
+        threshold: thresholdValue,
+      }
+    );
+  }, 300);
+
+  return () => clearTimeout(timer);
+}, [thresholdValue, selectedFile]);
+
+useEffect(() => {
+  if (!selectedFile) {
+    return;
+  }
+
+  const timer = setTimeout(() => {
+    applyFilter(
+      "http://127.0.0.1:8000/gaussian-blur",
+      {
+        blur: blurValue,
+      }
+    );
+  }, 300);
+
+  return () => clearTimeout(timer);
+}, [blurValue, selectedFile]);
 
   function handleFileChange(event) {
     const file = event.target.files[0];
@@ -87,11 +127,26 @@ function handleReset() {
   setGrayscalePreviewUrl("");
   setImageInfo(null);
   setFileName("");
+  setThresholdValue(127);
+  setBlurValue(5);
+
+  if (fileInputRef.current) {
+    fileInputRef.current.value = "";
+  }
+  
 }
 
-async function applyFilter(endpoint) {
+async function applyFilter(endpoint, options = {}) {
   const formData = new FormData();
   formData.append("file", selectedFile);
+
+  if (options.threshold !== undefined) {
+    formData.append("threshold", options.threshold);
+ }
+
+  if (options.blur !== undefined) {
+    formData.append("blur", options.blur);
+  }
 
   const response = await fetch(endpoint, {
     method: "POST",
@@ -107,16 +162,26 @@ async function applyFilter(endpoint) {
 
 async function handleInvert() {
   await applyFilter("http://127.0.0.1:8000/invert");
-}
+  }
 
 async function handleThreshold() {
-  await applyFilter("http://127.0.0.1:8000/threshold");
+  await applyFilter(
+    "http://127.0.0.1:8000/threshold",
+    {
+      threshold: thresholdValue,
+    }
+  );
 }
 
-async function handleGaussianBlur() {
-    await applyFilter("http://127.0.0.1:8000/gaussian-blur");
-}
-
+    async function handleGaussianBlur() {
+      await applyFilter(
+        "http://127.0.0.1:8000/gaussian-blur",
+       {
+           blur: blurValue,
+       }
+      );
+    }
+        
 
   return (
     <div style={{ padding: "40px", fontFamily: "Arial" }}>
@@ -130,8 +195,11 @@ async function handleGaussianBlur() {
 
       <h2>Upload File</h2>
 
-      <input type="file" onChange={handleFileChange} />
-
+      <input
+        ref={fileInputRef}
+        type="file"
+        onChange={handleFileChange}
+      />
       <br />
       <br />
 
@@ -145,6 +213,10 @@ async function handleGaussianBlur() {
         onInvert={handleInvert}
         onThreshold={handleThreshold}
         onGaussianBlur={handleGaussianBlur}
+        thresholdValue={thresholdValue}
+        onThresholdValueChange={setThresholdValue}
+        blurValue={blurValue}
+        onBlurValueChange={setBlurValue}
       />
 
       <Workspace
