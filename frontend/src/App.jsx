@@ -12,6 +12,7 @@ function App() {
   const [fileName, setFileName] = useState("");
   const [thresholdValue, setThresholdValue] = useState(127);
   const [blurValue, setBlurValue] = useState(5);
+  const [activeFilter, setActiveFilter] = useState("threshold");
   const fileInputRef = useRef(null);
   
 
@@ -24,9 +25,9 @@ function App() {
   }, []);
 
   useEffect(() => {
-  if (!selectedFile) {
+  if (!selectedFile || activeFilter !== "threshold") {
     return;
-  }
+ }
 
  
   const timer = setTimeout(() => {
@@ -39,12 +40,12 @@ function App() {
   }, 300);
 
   return () => clearTimeout(timer);
-}, [thresholdValue, selectedFile]);
+}, [thresholdValue, selectedFile, activeFilter]);
 
 useEffect(() => {
-  if (!selectedFile) {
+  if (!selectedFile || activeFilter !== "gaussian-blur") {
     return;
-  }
+ }
 
   const timer = setTimeout(() => {
     applyFilter(
@@ -56,7 +57,7 @@ useEffect(() => {
   }, 300);
 
   return () => clearTimeout(timer);
-}, [blurValue, selectedFile]);
+}, [blurValue, selectedFile, activeFilter]);
 
   function handleFileChange(event) {
     const file = event.target.files[0];
@@ -129,6 +130,7 @@ function handleReset() {
   setFileName("");
   setThresholdValue(127);
   setBlurValue(5);
+  setActiveFilter("threshold");
 
   if (fileInputRef.current) {
     fileInputRef.current.value = "";
@@ -161,10 +163,14 @@ async function applyFilter(endpoint, options = {}) {
 
 
 async function handleInvert() {
+  setActiveFilter("invert");
+
   await applyFilter("http://127.0.0.1:8000/invert");
-  }
+}
 
 async function handleThreshold() {
+  setActiveFilter("threshold");
+
   await applyFilter(
     "http://127.0.0.1:8000/threshold",
     {
@@ -174,13 +180,15 @@ async function handleThreshold() {
 }
 
     async function handleGaussianBlur() {
-      await applyFilter(
-        "http://127.0.0.1:8000/gaussian-blur",
-       {
-           blur: blurValue,
-       }
-      );
+  setActiveFilter("gaussian-blur");
+
+  await applyFilter(
+    "http://127.0.0.1:8000/gaussian-blur",
+    {
+      blur: blurValue,
     }
+  );
+}
         
 
   return (
